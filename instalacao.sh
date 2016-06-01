@@ -124,7 +124,9 @@ if [ $? -eq 0 ]; then
  	done
 else
 	dialog --backtitle "Satus - Instalador Web" --infobox "Não foi possivel fazer o download e a instalação do SatusWEB" 0 0
+	sleep 2
 	echo "$DATA ====Não foi possivel fazer o download e a instalação do SatusWEB====" >> $LOG
+	exit
 fi
 
 
@@ -132,50 +134,50 @@ fi
 #						Configurações Necessarias					#
 #===================================================================#
 
+dialog --backtitle "Satus - Instalador Web" --infobox "Download do SatusWEB finalizado com Sucesso, mais calma agora iremos fazer as configurações..." 0 0
+sleep 2
+
 if [ -e $TOMCAT ]; then
 	tar xf $TOMCAT 
-	echo "$DATA --------------Descompactacao realizado com sucesso-------------" >> $LOG
+	echo "$DATA ====Descompactacao realizado com sucesso====" >> $LOG
 else
+	echo "$DATA ====Não foi passivel encontrar o arquivo $TOMCAT====" >> $LOG
+	dialog --backtitle "Satus - Instalador Web" --infobox "Nao foi passivel encontrar o arquivo $TOMCAT" 0 0
+	sleep 2
 	exit
-	echo "$DATA --------------Nao foi passivel encontrar o arquivo $TOMCAT-------------" >> $LOG
 fi
 
-if [[ -d apache-tomcat-9.0.0.M6 ]]; then
+if [ -d apache-tomcat-9.0.0.M6 ]; then
 	mv apache-tomcat-9.0.0.M6 tomcat9
-	echo "$DATA --------------Renomeando a pasta para TomCat-------------" >> $LOG
-else
-	exit	
-	echo "$DATA --------------Nao foi passivel encontrar o arquivo $TOMCAT-------------" >> $LOG
+	echo "$DATA ====Renomeando a pasta apache-tomcat-9.0.0.M6 para tomcat9====" >> $LOG
+else	
+	echo "$DATA ====Não foi passivel Renomear a pasta apache-tomcat-9.0.0.M6====" >> $LOG
+	dialog --backtitle "Satus - Instalador Web" --infobox "Não foi passivel Renomear a pasta apache-tomcat-9.0.0.M6" 0 0
+	sleep 2
+	exit
 fi
 
-
-echo "---------------------------------------------------------------------------------------------"
-
-echo "O TomCat foi instalado com sucesso, mais ainda nao acabou vamos realizar os parametros aguarde!!!"
-sleep 3
-
-echo "---------------------------------------------------------------------------------------------"
-
-
-
-
-
-echo "export CATALINA_HOME="/opt/tomcat9"" >> /etc/environment
-echo "export JAVA_HOME="/usr/lib/jvm/java-8-oracle"" >> /etc/environment
-echo "export JRE_HOME="/usr/lib/jvm/java-8-oracle/jre"" >> /etc/environment
-echo "export JAVA_TOOL_OPTIONS='-Dfile.encoding="UTF8"'" >> /etc/profile.local
-
-
-echo "$DATA --------------Criado Variaveis de Ambiente para o funcionamento do TomCat-------------" >> $LOG
+echo "export CATALINA_HOME="/opt/tomcat9"" >> /etc/environment && \
+echo "export JAVA_HOME="/usr/lib/jvm/java-8-oracle"" >> /etc/environment && \
+echo "export JRE_HOME="/usr/lib/jvm/java-8-oracle/jre"" >> /etc/environment && \
+echo "export JAVA_TOOL_OPTIONS='-Dfile.encoding="UTF8"'" >> /etc/profile.local 
 
 source ~/.bashrc
 source /etc/profile.local
 
-echo "<rolename="manager-gui"/>" >> /opt/tomcat9/conf/tomcat-users.xml
-echo "   <role rolename="admin-gui"/>" >> /opt/tomcat9/conf/tomcat-users.xml
-echo "   <user username="tomcat" password="tomcat" roles="manager-gui,admin-gui"/>" >> /opt/tomcat9/conf/tomcat-users.xml
-
-echo "$DATA --------------Configurado os parametros para o funcionamento do TomCat-------------" >> $LOG
+cd /opt/tomcat9/conf
+if [ -s tomcat-users.xml ]; then
+	sed '/<\/tomcat-users>/i <rolename="manager-gui"\/>' tomcat-users.xml > t
+	sed -i '/<\/tomcat-users>/i    <role rolename="admin-gui"\/>' t
+	sed -i '/<\/tomcat-users>/i   <user username="tomcat" password="tomcat" roles="manager-gui,admin-gui"\/>' t
+	mv tomcat-users.xms tomcat-users.xms.old > /dev/null 2&>1
+ 	mv t tomcat-users.xms > /dev/null 2&>1
+ 	echo "$DATA ====Configurado os parametros para o funcionamento do TomCat====" >> $LOG
+else
+	echo "$DATA ====Não foi possivel configurar o TomCat===" >> $LOG
+	dialog --backtitle "Satus - Instalador Web" --infobox "Não foi possivel configurar o TomCat" 0 0
+	sleep 2
+fi
 
 cd -
 cp ./tomcat9 /etc/init.d/satusweb
@@ -187,13 +189,14 @@ update-rc.d satusweb defaults
 service satusweb start
 
 
-if [[ $? = 0 ]]; then
-	echo "$DATA --------------Servico iniciado com sucesso-------------" >> $LOG
+if [ $? = 0 ]; then
+	echo "$DATA ====Servico iniciado com sucesso====" >> $LOG
+	dialog --backtitle "Satus - Instalador Web" --infobox "Parabens o SatusWEB esta instalado, aproveite!!!" 0 0
+	sleep 3
 else
-	echo "$DATA --------------Nao foi possivel iniciar o servico-------------" >> $LOG
+	echo "$DATA ====Nao foi possivel iniciar o serviço====" >> $LOG
+	dialog --backtitle "Satus - Instalador Web" --infobox "Nao foi possivel iniciar o serviço do SatusWEB" 0 0
+	sleep 2
 fi
 
-echo "---------------------------------------------------------------"
-echo "Parabens o Apache TomCat e o Java estao instalado, aproveite!!!"
-echo "---------------------------------------------------------------"
 exit	
