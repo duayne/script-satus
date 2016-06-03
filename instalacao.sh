@@ -165,13 +165,15 @@ echo "export JAVA_TOOL_OPTIONS='-Dfile.encoding="UTF8"'" >> /etc/profile.local
 source ~/.bashrc
 source /etc/profile.local
 
+cd -
+
 cd /opt/tomcat9/conf
 if [ -s tomcat-users.xml ]; then
-	sed '/<\/tomcat-users>/i <rolename="manager-gui"\/>' tomcat-users.xml > t
+	sed '/<\/tomcat-users>/i <role rolename="manager-gui"\/>' tomcat-users.xml > t
 	sed -i '/<\/tomcat-users>/i    <role rolename="admin-gui"\/>' t
 	sed -i '/<\/tomcat-users>/i   <user username="tomcat" password="tomcat" roles="manager-gui,admin-gui"\/>' t
-	mv tomcat-users.xms tomcat-users.xms.old > /dev/null
- 	mv t tomcat-users.xms > /dev/null
+	mv tomcat-users.xml tomcat-users.xml.old > /dev/null
+ 	mv t tomcat-users.xml > /dev/null
  	echo "$DATA ====Configurado os parametros para o funcionamento do TomCat====" >> $LOG
 else
 	echo "$DATA ====Não foi possivel configurar o TomCat===" >> $LOG
@@ -198,5 +200,7 @@ else
 	dialog --backtitle "Satus - Instalador Web" --infobox "Nao foi possivel iniciar o serviço do SatusWEB" 0 0
 	sleep 2
 fi
+
+clear
 
 exit	
