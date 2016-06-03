@@ -68,7 +68,7 @@ fi
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 > /dev/null
 
 if [ $? -eq 0 ]; then
-	echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections > /dev/null 2&>1
+	echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections > /dev/null
 	if [ $? -eq 0 ]; then
 		echo "$DATA ====Criado a chave do Repositório e incluido o debconf as confirmações nessesária====" >> $LOG
 	else
