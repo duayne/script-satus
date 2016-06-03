@@ -48,13 +48,13 @@ fi
 #===================================================================#
 
 
-apt-get update && apt-get install dialog
+apt-get update > /dev/null && apt-get install dialog ntpdate -y > /dev/null
 
 dialog --backtitle "Satus - Instalador Web" --msgbox "Olá, bem vindo ao instalador de aplicação web da Satus, nessa função vamos fazer todas a instações, configuração e verificação nessesária para o Perfeito funcionameto da aplicação." 0 0
 
 
-echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list > /dev/null 2&>1
-echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list > /dev/null 2&>1
+echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list > /dev/null
+echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list > /dev/null
 
 if [ $? -eq 0 ]; then
 	echo "$DATA ====Criado a Source.list.d com o Repositório do Java====" >> $LOG
@@ -86,7 +86,7 @@ fi
 
 if [[ $? = 0 ]]; then
 	dialog --backtitle "Satus - Instalador Web" --infobox "Vamos Começar a fazer os Downloads Nessesários esse processo pode levar alguns minutos..." 0 0
-	apt-get update  2>&1 > /dev/null && apt-get install oracle-java8-installer oracle-java8-set-default -y 2>&1 > /dev/null
+	apt-get update  > /dev/null && apt-get install oracle-java8-installer oracle-java8-set-default -y > /dev/null
 	if [[ $? = 0 ]]; then
 		echo "$DATA ====Java instalador com Sucesso====" >> $LOG
 	else
@@ -105,7 +105,7 @@ if [ $? -eq 0 ]; then
 	sleep 2
 	cd /opt
 	
-	wget -b http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M6/bin/$TOMCAT > /dev/null 2&>1
+	wget -b http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M6/bin/$TOMCAT > /dev/null
 	while true
   	do
 		if [ -e $TOMCAT ]; then
@@ -170,8 +170,8 @@ if [ -s tomcat-users.xml ]; then
 	sed '/<\/tomcat-users>/i <rolename="manager-gui"\/>' tomcat-users.xml > t
 	sed -i '/<\/tomcat-users>/i    <role rolename="admin-gui"\/>' t
 	sed -i '/<\/tomcat-users>/i   <user username="tomcat" password="tomcat" roles="manager-gui,admin-gui"\/>' t
-	mv tomcat-users.xms tomcat-users.xms.old > /dev/null 2&>1
- 	mv t tomcat-users.xms > /dev/null 2&>1
+	mv tomcat-users.xms tomcat-users.xms.old > /dev/null
+ 	mv t tomcat-users.xms > /dev/null
  	echo "$DATA ====Configurado os parametros para o funcionamento do TomCat====" >> $LOG
 else
 	echo "$DATA ====Não foi possivel configurar o TomCat===" >> $LOG
